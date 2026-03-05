@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { useWebSocket } from "@/shared/hooks/useWebSocket";
 import { Header } from "@/shared/components/Header";
 import { NotificationStack } from "@/shared/components/NotificationStack";
@@ -5,10 +6,19 @@ import { DashboardPage } from "@/pages/DashboardPage";
 import { PortfolioPage } from "@/features/portfolio-overview/PortfolioPage";
 import { OrderBookPage } from "@/features/order-book/OrderBookPage";
 import { WatchlistPage } from "@/features/dashboard/WatchlistPage";
+import { LoginPage } from "./pages/LoginPage"; // Import your new page
 import { useUIStore } from "@/store/ui.store";
 
 export default function App() {
-  // Starts WebSocket connection — runs once on mount
+  // 1. Authentication State
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const token = localStorage.getItem('bearer_token');
+    if (token) setIsAuthenticated(true);
+  }, []);
+
+  // 2. Starts WebSocket connection — only if authenticated
   useWebSocket();
 
   const activeTab = useUIStore((s) => s.activeTab);
@@ -23,6 +33,11 @@ export default function App() {
     }
   };
 
+  // 3. Conditional Rendering: If not logged in, show ONLY LoginPage
+  if (!isAuthenticated) {
+    return <LoginPage onLoginSuccess={() => setIsAuthenticated(true)} />;
+  }
+
   return (
     <div style={{
       display: "flex", flexDirection: "column",
@@ -31,12 +46,10 @@ export default function App() {
     }}>
       <Header />
 
-      {/* Tab content */}
       <main style={{ flex: 1, display: "flex", overflow: "hidden", position: "relative" }}>
         {renderTab()}
       </main>
 
-      {/* Footer */}
       <footer style={{
         padding: "4px 20px",
         borderTop: "1px solid var(--border)",
