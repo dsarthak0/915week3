@@ -8,6 +8,7 @@ export const STATIC_PUBLIC_KEY = "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0NCk1Gd3dEUV
 
 export const getAuthHeaders = () => {
     const ts = Date.now().toString();
+    const token = localStorage.getItem('bearer_token'); // Match the key!
     return {
         'content-type': 'application/json',
         'appName': 'NVantage - Middleware Qa',
@@ -22,6 +23,7 @@ export const getAuthHeaders = () => {
         'appInstallId': DEVICE_ID,
         'userAgent': 'com.coditas.omnenest.omnenest_mobile_app.middlewareqa/1.0.6 (Google google sdk_gphone64_x86_64; Android 15 SDK35)',
         // Matches your format: deviceId-timestamp
-        'xRequestId': `${DEVICE_ID}-${ts}` 
+        'xRequestId': `${DEVICE_ID}-${ts}` ,
+        'Authorization': token ? `Bearer ${token}` : ''
     };
 };
