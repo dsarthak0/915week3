@@ -9,6 +9,7 @@ import { WatchlistPage } from "@/features/dashboard/WatchlistPage";
 import { LoginPage } from "./pages/LoginPage"; // Import your new page
 import { useUIStore } from "@/store/ui.store";
 import { DashboardHeader } from "./shared/components/apiheader";
+import { MarketStatusHeader } from "./services/websocket/apis/marketstatuslogic";
 
 export default function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -60,6 +61,8 @@ export default function App() {
             <span>ws://localhost:8080</span>
             <span>Groww-915 · Simulated data</span>
           </footer>
+          <MarketStatusHeader/>
+          <WatchlistPage/>
         </>
       )}
       <NotificationStack />

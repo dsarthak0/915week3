@@ -17,6 +17,7 @@ export const LoginPage = ({ onLoginSuccess }: LoginPageProps) => {
   const handleInitialAuth = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    localStorage.removeItem('bearer_token');
     try {
       await preAuthHandshake();
       await login(username, password);

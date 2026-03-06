@@ -18,24 +18,20 @@ export const DashboardHeader: React.FC = () => {
   useEffect(() => {
   const fetchData = async () => {
     try {
+      const response = await fetch(`${BASE_URL}/v1/api/profile/dashboard-config`, {
+            headers: getAuthHeaders()
         // 1. Generate the dynamic headers
-        const headers = getAuthHeaders();
-
-        // 2. Use BASE_URL (which is your '/api-proxy')
-        const response = await fetch(`${BASE_URL}/v1/api/profile/dashboard-config`, {
-          method: 'GET',
-          headers: headers, // This sends all the required keys (source, appName, etc.)
+        // This sends all the required keys (source, appName, etc.)
         });
 
-        if (!response.ok) {
-          // If it's still 400, the server might be rejecting 'MOB' from a web origin
-          throw new Error(`Server error: ${response.status}`);
+        if (response.status === 412) {
+            console.warn("Dashboard: Handshake/Device sync issue (412).");
+            return; // Exit early without throwing a loud error
         }
 
-        const data: ApiResponse = await response.json();
-        if (data?.dashboard?.features) {
-          setFeatures(data.dashboard.features);
-        }
+        if (!response.ok) throw new Error(`Server error: ${response.status}`);
+        
+        const data = await response.json();
       } catch (error) {
         console.error("Failed to fetch features:", error);
       }

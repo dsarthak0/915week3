@@ -28,16 +28,16 @@ export const Header = memo(function Header() {
       <div style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0 }}>
         <span style={{
           fontFamily: "var(--font-display)", fontSize: "20px",
-          fontWeight: "800", color: "var(--green)", letterSpacing: "-0.5px",
+          fontWeight: "800", color: "var(--blue)", letterSpacing: "-0.5px",
         }}>
-          groww
+          OmneNest
         </span>
-        <span style={{
-          fontSize: "9px", color: "var(--text-muted)",
+        {/* <span style={{
+          fontSize: "9px", color: "var(--white)",
           letterSpacing: "2px", fontFamily: "var(--font-mono)",
         }}>
-          915
-        </span>
+          TechNologies
+        </span> */}
       </div>
 
       {/* Nav tabs */}
