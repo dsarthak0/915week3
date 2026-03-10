@@ -7,11 +7,14 @@ on:
     branches: [main, master]
  
 jobs:
- 
   # ── Step 1: Test + Coverage Gate ──────────────────────────────
   test:
     name: Test & Coverage Gate
     runs-on: ubuntu-latest
+    # Tell GitHub to look inside the client folder by default
+    defaults:
+      run:
+        working-directory: ./client
     steps:
       - uses: actions/checkout@v4
         with:
@@ -21,6 +24,8 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          # Point the cache to the specific lock file location
+          cache-dependency-path: './client/package-lock.json'
  
       - run: npm ci
  
@@ -38,7 +43,8 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: coverage
-          path: coverage/
+          # Path must remain relative to the root or absolute
+          path: client/coverage/
  
   # ── Step 2: SonarQube Analysis ────────────────────────────────
   sonar:
@@ -53,7 +59,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: coverage
-          path: coverage/
+          path: client/coverage/
  
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
@@ -61,6 +67,8 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
         with:
+          # Tell Sonar to look inside the client folder
+          projectBaseDir: client
           args: >
             -Dsonar.projectKey=asfasdfasfa
             -Dsonar.projectName=asfasdfasfa
@@ -70,7 +78,6 @@ jobs:
             -Dsonar.exclusions=src/**/*.test.ts,src/**/*.test.tsx,src/setupTests.ts,src/main.tsx,node_modules/**,dist/**,coverage/**
             -Dsonar.test.inclusions=src/**/*.test.ts,src/**/*.test.tsx
             -Dsonar.javascript.lcov.reportPaths=coverage/lcov.info
-            -Dsonar.testExecutionReportPaths=coverage/test-reporter.xml
             -Dsonar.typescript.tsconfigPath=tsconfig.json
  
       - name: SonarQube Quality Gate
@@ -86,6 +93,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: sonar
     if: github.event_name == 'push'
+    defaults:
+      run:
+        working-directory: ./client
     steps:
       - uses: actions/checkout@v4
  
@@ -93,9 +103,10 @@ jobs:
         with:
           node-version: '20'
           cache: 'npm'
+          cache-dependency-path: './client/package-lock.json'
  
       - run: npm ci
       - run: npm run build
  
       - name: Deploy
-        run: echo " Deploy your app here (Vercel / S3 / Azure / etc.)"actions/deploy-pages@v4
+        run: echo " Deploying app..."
